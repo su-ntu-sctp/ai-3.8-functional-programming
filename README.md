@@ -1,43 +1,33 @@
-# Lesson Repo Template
+# [3.8] Functional Programming — Lambdas & Streams
 
-Template for creating lesson repositories under **su-ntu-sctp**.
+## Lesson Overview
+![Title](./assets/images/infographic-3.8-lambdas-and-streams.png)
 
-## Naming (Option A)
-`5/3m-<track>-<module>.<lesson>-<topic-slug>`  
-**Examples**
-`5/3m-ai-3.1-java-intro`
+## Dependencies
+- [Self Studies](./studies.md)
+- [Lesson](./lesson.md)
+- [Assignment](./assignment.md)
+- [Slide Deck](./slides.md)
 
-## Naming (Option B) 
+## Lesson Objectives
+* **Write** lambda expressions to replace verbose anonymous classes
+* **Use** built-in functional interfaces (Predicate, Function, Consumer)
+* **Apply** Stream API operations (filter, map, sorted) to process collections
+* **Chain** multiple stream operations to create data processing pipelines
 
-`<track>-<module>.<lesson>-<topic-slug>`
+## Lesson Plan
 
-**Examples**
-`ai-3.1-java-intro`
-
-
-## Structure
-```text
-.
-├─ README.md
-├─ lesson.md
-├─ assignment.md
-├─ quiz.md
-├─ studies.md
-├─ slides/
-│  └─ placeholder.txt
-├─ assets/
-│  ├─ images/
-│  └─ data/
-└─ .gitignore
-```
-
-
-## Use This Template
-1) Click **Use this template → Create new repository**  
-2) Name it using the convention above  
-3) Clone, edit files, commit, push
-
-## Notes
-- Put slides in `slides/` (pptx/pdf)  
-- Images in `assets/images/`, data in `assets/data/`  
-- Each file contains its own authoring instructions (open and follow the checklists inside)
+| Duration | What | How or Why |
+|----------|------|------------|
+| 10 min | Warm up | Recap Lesson 3.7 — OOP pillars, quick Q&A |
+| 10 min | Part 1: Intro to Functional Programming | What FP is, why it matters, imperative vs declarative |
+| 20 min | Part 2: Lambda Expressions | Syntax, arrow operator, lambda formats; sort/forEach examples |
+| 5 min | Activity 1 — Lambda practice | forEach multiply by 3; sort list by length |
+| 25 min | Part 3: Functional Interfaces | Predicate, Function, Consumer; custom Calculator interface |
+| 5 min | Activity 2 — Functional interfaces practice | Predicate containsA; Function evenOrOdd |
+| 10 min | Break | — |
+| 30 min | Part 4: Stream API | filter, map, sorted, collect, count; chaining patterns |
+| 10 min | Activity 3 — Stream practice | Filter divisible by 3; filter + map + uppercase |
+| 15 min | 🔵 Optional: Method References | :: operator, static/instance/constructor references |
+| 15 min | Wrap up | Recap lambdas → interfaces → streams; preview assignment; Q&A |
+| **Total** | | **155 min — ~25 min buffer** |

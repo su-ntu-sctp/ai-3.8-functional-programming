@@ -2,7 +2,7 @@
 
 ## Lesson Overview
 
-This lesson introduces functional programming in Java, focusing on lambda expressions, functional interfaces, and the Stream API. You'll learn to write cleaner, more expressive code by applying functional programming concepts to common programming tasks like filtering, transforming, and processing collections.
+This lesson introduces functional programming in Java, focusing on functional interfaces, lambda expressions, and the Stream API. You'll learn to write cleaner, more expressive code by applying functional programming concepts to common programming tasks like filtering, transforming, and processing collections.
 
 **Prerequisites:** Basic Java knowledge (classes, interfaces, collections like ArrayList)
 
@@ -42,231 +42,50 @@ Functional programming helps you write:
 - **Safer code**: Fewer bugs from accidental data changes
 - **More maintainable code**: Easier to understand and modify
 
+### Traditional vs Functional — Side by Side
+
+**Task**: Get all even numbers from a list.
+
+**Traditional way (How to do it):**
+
+```java
+ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+ArrayList<Integer> evenNumbers = new ArrayList<>();
+
+for (int i = 0; i < numbers.size(); i++) {
+    if (numbers.get(i) % 2 == 0) {
+        evenNumbers.add(numbers.get(i));
+    }
+}
+
+System.out.println(evenNumbers); // [2, 4]
+```
+
+You are telling Java — loop through, get each item, check if even, add to list. You control every step.
+
+**Functional way (What you want):**
+
+```java
+List<Integer> evenNumbers = numbers.stream()
+    .filter(n -> n % 2 == 0)
+    .collect(Collectors.toList());
+
+System.out.println(evenNumbers); // [2, 4]
+```
+
+You are just saying — stream the numbers, keep only the even ones, collect them. Java handles the loop.
+
+> **Key point**: The original `numbers` list is **untouched**. Functional programming creates a **new list** rather than modifying the original. This makes your code safer — other parts of your program that use `numbers` are not affected.
+
 Create `LearnFunctionalProgramming.java` and code along.
 
 ---
 
-## Part 2 - Lambda Expressions
-
-### What Problem Do Lambdas Solve?
-
-Before Java 8, if you wanted to pass behavior (not just data) to a method, you had to create entire classes or use verbose anonymous classes.
-
-**Example problem**: You want to print each item in a list.
-
-**Old way (verbose):**
-
-```java
-ArrayList<String> names = new ArrayList<>(Arrays.asList("Alice", "Bob", "Charlie"));
-
-for (int i = 0; i < names.size(); i++) {
-    System.out.println(names.get(i));
-}
-```
-
-This works, but you're focused on **how** to loop (the index, the condition, incrementing) rather than **what** you want to do (print each name).
-
-**With Lambda (concise):**
-
-```java
-names.forEach(name -> System.out.println(name));
-```
-
-Now you're just saying: "For each name, print it". Much clearer!
-
-### What Exactly is a Lambda Expression?
-
-A **lambda expression** is a short way to write a function without giving it a name. It's also called an **anonymous function**.
-
-Think of it as a recipe you use once and don't need to save:
-- **Named function**: Like a recipe card you keep in your recipe box
-- **Lambda**: Like quickly telling someone "just mix flour and water"
-
-### Lambda Syntax Explained
-
-The basic structure is:
-
-```
-(parameters) -> { body }
-```
-
-Let's break this down:
-
-```java
-(name) -> System.out.println(name)
-```
-
-- `(name)` - **Parameter**: The input to your function (like ingredients)
-- `->` - **Arrow**: Means "goes to" or "becomes"
-- `System.out.println(name)` - **Body**: What to do with the input (like cooking instructions)
-
-**Read it as**: "name goes to print name"
-
-### Different Lambda Formats
-
-#### 1. No parameters
-
-When you don't need any input:
-
-```java
-() -> System.out.println("Hello!")
-```
-
-**Read as**: "Nothing goes to print Hello"
-
-**Real example:**
-
-```java
-// Create a simple task
-Runnable task = () -> System.out.println("Task is running");
-task.run(); // Output: Task is running
-```
-
-#### 2. One parameter (parentheses optional)
-
-```java
-// With parentheses
-(x) -> x * 2
-
-// Without parentheses (cleaner)
-x -> x * 2
-```
-
-**Real example:**
-
-```java
-ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-
-// Double each number
-numbers.forEach(num -> System.out.println(num * 2));
-// Output: 2, 4, 6, 8, 10
-```
-
-#### 3. Multiple parameters
-
-When you need more than one input:
-
-```java
-(a, b) -> a + b
-```
-
-**Read as**: "a and b go to a plus b"
-
-**Real example:**
-
-```java
-// Sort by length
-Collections.sort(names, (a, b) -> a.length() - b.length());
-```
-
-#### 4. Multiple statements (need curly braces)
-
-When you need to do more than one thing:
-
-```java
-(x, y) -> {
-    int sum = x + y;
-    System.out.println("Sum is: " + sum);
-    return sum;
-}
-```
-
-### Understanding the Arrow ->
-
-The arrow `->` is the key symbol in lambda expressions. Think of it as:
-- "becomes"
-- "goes to"
-- "transforms into"
-- "results in"
-
-```java
-x -> x * 2      // x becomes x times 2
-name -> name.toUpperCase()  // name becomes uppercase name
-(a, b) -> a + b // a and b become their sum
-```
-
-### Lambda vs Traditional Comparison
-
-Let's see how lambdas simplify code with a practical example.
-
-**Task**: Sort a list of names by their length.
-
-**Old way with Anonymous Class:**
-
-```java
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
-ArrayList<String> names = new ArrayList<>(Arrays.asList("Alice", "Bob", "Charlie", "David"));
-
-// Using anonymous class - VERY verbose!
-Collections.sort(names, new Comparator<String>() {
-    @Override
-    public int compare(String a, String b) {
-        return a.length() - b.length();
-    }
-});
-
-System.out.println(names); // [Bob, Alice, David, Charlie]
-```
-
-**New way with Lambda:**
-
-```java
-Collections.sort(names, (a, b) -> a.length() - b.length());
-
-System.out.println(names); // [Bob, Alice, David, Charlie]
-```
-
-**What happened?**
-- We removed 5 lines of boilerplate code!
-- The logic is the same: compare lengths of two strings
-- Much easier to read and understand
-
-### When to Use Lambdas
-
-✅ **Use lambdas when:**
-- You need to pass simple behavior to a method
-- The function is used only once
-- It makes your code clearer and shorter
-
-### 🧑‍💻 Quick Activity: Lambda Practice
-
-Try these exercises:
-
-1. Create a lambda that takes two integers and returns their sum
-   ```java
-   // Your code here
-   Calculator add = (a, b) -> a + b;
-   System.out.println(add.calculate(10, 5)); // 15
-   ```
-
-2. Use lambda to sort a list of strings by length (shortest first)
-   ```java
-   List<String> words = Arrays.asList("apple", "pie", "banana", "kiwi");
-   // Your code here
-   ```
-
-3. Use lambda with forEach to print each number multiplied by 3
-   ```java
-   List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
-   // Your code here
-   ```
-
----
-
-## Part 3 - Functional Interfaces
+## Part 2 - Functional Interfaces
 
 ### What is a Functional Interface?
 
-Before we can understand functional interfaces, let's understand why they exist.
-
-**Remember**: Lambda expressions are just short ways to write functions. But in Java, **everything must be an object**. So how does Java know what type a lambda is?
-
-**Answer**: Functional Interfaces!
-
-A **functional interface** is an interface with **exactly one abstract method**. This one method is what your lambda expression implements.
+A **functional interface** is an interface with **exactly one abstract method**. This is the foundation of functional programming in Java — before you can use a lambda, you need a functional interface to hold it.
 
 Think of a functional interface as a **contract**:
 - The contract says: "You must provide one specific behavior"
@@ -306,7 +125,7 @@ formalGreeting.sayHello("Bob");     // Output: Good day, Bob.
 
 Java provides common functional interfaces in the `java.util.function` package so you don't have to create your own for common patterns.
 
-#### 1. Predicate<T> - Testing a Condition
+#### 1. Predicate\<T\> - Testing a Condition
 
 **What it does**: Takes one input, returns true or false
 
@@ -347,7 +166,7 @@ numbers.removeIf(n -> n % 2 != 0);
 System.out.println(numbers); // [2, 4, 6, 8, 10]
 ```
 
-#### 2. Function<T, R> - Transforming Data
+#### 2. Function\<T, R\> - Transforming Data
 
 **What it does**: Takes one input of type T, returns output of type R
 
@@ -375,7 +194,7 @@ Function<Integer, Integer> doubleIt = n -> n * 2;
 System.out.println(doubleIt.apply(5)); // 10
 ```
 
-#### 3. Consumer<T> - Performing Actions
+#### 3. Consumer\<T\> - Performing Actions
 
 **What it does**: Takes one input, returns nothing (just does something with the input)
 
@@ -405,7 +224,7 @@ names.forEach(greetPerson);
 // Hello, Charlie!
 ```
 
-#### 4. Supplier<T> - Providing Values
+#### 4. Supplier\<T\> - Providing Values
 
 **What it does**: Takes no input, returns a value
 
@@ -458,7 +277,7 @@ public class Main {
         Calculator add = (a, b) -> a + b;
         Calculator subtract = (a, b) -> a - b;
         Calculator multiply = (a, b) -> a * b;
-        
+
         System.out.println("5 + 3 = " + add.calculate(5, 3));        // 8
         System.out.println("5 - 3 = " + subtract.calculate(5, 3));   // 2
         System.out.println("5 * 3 = " + multiply.calculate(5, 3));   // 15
@@ -498,19 +317,208 @@ Try these exercises:
 
 ---
 
+## Part 3 - Lambda Expressions
+
+### What Problem Do Lambdas Solve?
+
+Now that you understand functional interfaces, you know that Java needs a way to pass behavior as a value. Before Java 8, you had to create entire classes or use verbose anonymous classes to do this.
+
+**Example problem**: You want to print each item in a list.
+
+**Old way (verbose anonymous class):**
+
+```java
+ArrayList<String> names = new ArrayList<>(Arrays.asList("Alice", "Bob", "Charlie"));
+
+for (int i = 0; i < names.size(); i++) {
+    System.out.println(names.get(i));
+}
+```
+
+This works, but you're focused on **how** to loop rather than **what** you want to do.
+
+**With Lambda (concise):**
+
+```java
+names.forEach(name -> System.out.println(name));
+```
+
+Now you're just saying: "For each name, print it". Much clearer!
+
+### What Exactly is a Lambda Expression?
+
+A **lambda expression** is a short way to write a function without giving it a name. It's also called an **anonymous function**. It is how you fulfill the contract of a functional interface in the shortest possible way.
+
+Think of it as a recipe you use once and don't need to save:
+- **Named function**: Like a recipe card you keep in your recipe box
+- **Lambda**: Like quickly telling someone "just mix flour and water"
+
+### Lambda Syntax Explained
+
+The basic structure is:
+
+```
+(parameters) -> { body }
+```
+
+Let's break this down:
+
+```java
+(name) -> System.out.println(name)
+```
+
+- `(name)` - **Parameter**: The input to your function
+- `->` - **Arrow**: Means "goes to" or "becomes"
+- `System.out.println(name)` - **Body**: What to do with the input
+
+**Read it as**: "name goes to print name"
+
+### Different Lambda Formats
+
+#### 1. No parameters
+
+When you don't need any input:
+
+```java
+() -> System.out.println("Hello!")
+```
+
+**Real example:**
+
+```java
+Runnable task = () -> System.out.println("Task is running");
+task.run(); // Output: Task is running
+```
+
+#### 2. One parameter (parentheses optional)
+
+```java
+// With parentheses
+(x) -> x * 2
+
+// Without parentheses (cleaner)
+x -> x * 2
+```
+
+**Real example:**
+
+```java
+ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+
+// Double each number
+numbers.forEach(num -> System.out.println(num * 2));
+// Output: 2, 4, 6, 8, 10
+```
+
+#### 3. Multiple parameters
+
+```java
+(a, b) -> a + b
+```
+
+**Real example:**
+
+```java
+// Sort by length
+Collections.sort(names, (a, b) -> a.length() - b.length());
+```
+
+#### 4. Multiple statements (need curly braces)
+
+```java
+(x, y) -> {
+    int sum = x + y;
+    System.out.println("Sum is: " + sum);
+    return sum;
+}
+```
+
+### Understanding the Arrow ->
+
+The arrow `->` is the key symbol in lambda expressions. Think of it as:
+- "becomes"
+- "goes to"
+- "transforms into"
+
+```java
+x -> x * 2                  // x becomes x times 2
+name -> name.toUpperCase()  // name becomes uppercase name
+(a, b) -> a + b             // a and b become their sum
+```
+
+### Lambda vs Anonymous Class Comparison
+
+**Task**: Sort a list of names by their length.
+
+**Old way with Anonymous Class:**
+
+```java
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+ArrayList<String> names = new ArrayList<>(Arrays.asList("Alice", "Bob", "Charlie", "David"));
+
+// Using anonymous class - VERY verbose!
+Collections.sort(names, new Comparator<String>() {
+    @Override
+    public int compare(String a, String b) {
+        return a.length() - b.length();
+    }
+});
+
+System.out.println(names); // [Bob, Alice, David, Charlie]
+```
+
+**New way with Lambda:**
+
+```java
+Collections.sort(names, (a, b) -> a.length() - b.length());
+
+System.out.println(names); // [Bob, Alice, David, Charlie]
+```
+
+We removed 5 lines of boilerplate! The logic is the same — much easier to read.
+
+### When to Use Lambdas
+
+✅ **Use lambdas when:**
+- You need to pass simple behavior to a method
+- The function is used only once
+- It makes your code clearer and shorter
+
+### 🧑‍💻 Quick Activity: Lambda Practice
+
+Try these exercises:
+
+1. Create a lambda that takes two integers and returns their sum
+   ```java
+   Calculator add = (a, b) -> a + b;
+   System.out.println(add.calculate(10, 5)); // 15
+   ```
+
+2. Use lambda to sort a list of strings by length (shortest first)
+   ```java
+   List<String> words = Arrays.asList("apple", "pie", "banana", "kiwi");
+   // Your code here
+   ```
+
+3. Use lambda with forEach to print each number multiplied by 3
+   ```java
+   List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+   // Your code here
+   ```
+
+---
+
 ## Part 4 - Stream API
 
 ### What is a Stream?
 
 A **Stream** is like a pipeline for processing data. Imagine a conveyor belt in a factory:
 - Items come in at one end
-- They go through various stations (cleaning, painting, packaging)
+- They go through various stations (filtering, transforming, sorting)
 - Final products come out at the other end
-
-With Streams, you can:
-- Filter out items you don't want
-- Transform items into something else
-- Collect the results at the end
 
 A Stream is **not** a data structure. It doesn't store data. It's a **pipeline** of operations on data.
 
@@ -522,10 +530,9 @@ A Stream is **not** a data structure. It doesn't store data. It's a **pipeline**
 ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 ArrayList<Integer> evenNumbers = new ArrayList<>();
 
-// Step by step instructions
 for (int num : numbers) {
-    if (num % 2 == 0) {        // Check if even
-        evenNumbers.add(num);   // Add to new list
+    if (num % 2 == 0) {
+        evenNumbers.add(num);
     }
 }
 
@@ -535,18 +542,20 @@ System.out.println(evenNumbers); // [2, 4, 6, 8, 10]
 **New way** (declarative - tell computer WHAT you want):
 
 ```java
+import java.util.stream.Collectors;
+
 List<Integer> evenNumbers = numbers.stream()
-    .filter(num -> num % 2 == 0)  // Keep only even numbers
-    .collect(Collectors.toList()); // Collect into a list
+    .filter(num -> num % 2 == 0)
+    .collect(Collectors.toList());
 
 System.out.println(evenNumbers); // [2, 4, 6, 8, 10]
 ```
 
 **Benefits:**
-- More readable - reads like English
-- Less code - no manual loops
-- Fewer bugs - can't mess up loop conditions
-- Easy to modify - just add more operations
+- More readable — reads like English
+- Less code — no manual loops
+- Fewer bugs — can't mess up loop conditions
+- Easy to modify — just add more operations
 
 ### How Streams Work
 
@@ -758,12 +767,12 @@ List<String> names = Arrays.asList("alice", "BOB", "Charlie", "DAVID", "eve");
 
 // Complex pipeline
 List<String> result = names.stream()
-    .filter(name -> name.length() > 3)     // Only names with 4+ letters
+    .filter(name -> name.length() > 3)     // Only names with 4+ letters (removes "BOB" and "eve")
     .map(String::toLowerCase)              // Convert to lowercase
     .sorted()                              // Sort alphabetically
     .collect(Collectors.toList());         // Collect to list
 
-System.out.println(result); // [alice, bob, charlie, david]
+System.out.println(result); // [alice, charlie, david]
 ```
 
 ### Common Stream Patterns
@@ -869,7 +878,7 @@ names.forEach(System.out::println);
 ❌ Don't use method reference when lambda does more than call one method:
 
 ```java
-// Can't use method reference here
+// Can't use method reference here - doing more than just calling one method
 names.forEach(name -> System.out.println("Name: " + name));
 ```
 
@@ -947,17 +956,17 @@ import java.util.stream.Collectors;
 public class MethodRefExample {
     public static void main(String[] args) {
         List<String> names = Arrays.asList("alice", "bob", "charlie", "david");
-        
+
         // Without method references
         List<String> result1 = names.stream()
             .map(name -> name.toUpperCase())
             .collect(Collectors.toList());
-        
+
         // With method references - cleaner!
         List<String> result2 = names.stream()
             .map(String::toUpperCase)
             .collect(Collectors.toList());
-        
+
         // Print using method reference
         result2.forEach(System.out::println);
         // Output: ALICE, BOB, CHARLIE, DAVID

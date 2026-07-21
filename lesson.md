@@ -1,4 +1,4 @@
-# Java Functional Programming 
+# Java Functional Programming
 
 ## Lesson Overview
 
@@ -95,6 +95,8 @@ Think of a functional interface as a **contract**:
 - The contract says: "You must provide one specific behavior"
 - Your lambda expression fulfills that contract
 
+> **Quick preview: what is a lambda?** You'll see lambdas everywhere in the examples below, so here's just enough to follow along. A **lambda expression** is a short, unnamed function that fills in the one method a functional interface requires. It looks like this: `(parameters) -> body` — for example, `name -> System.out.println(name)` means "take `name`, and print it." That's all you need for now — we'll do a full deep dive into lambda syntax and all its formats in **Part 3**.
+
 ### A Simple Example
 
 Here is the full working code — notice the class and main wrapper:
@@ -149,6 +151,20 @@ System.out.println(isEven.test(4));  // true
 System.out.println(isEven.test(7));  // false
 ```
 
+**Passing a Predicate as a method argument:**
+
+A Predicate isn't just for testing values directly — you can also pass it into a method as an argument, the same way you'd pass an `int` or a `String`. The method just needs a parameter of type `Predicate<T>`:
+
+```java
+public static void checkNumber(int number, Predicate<Integer> condition) {
+    System.out.println(condition.test(number));
+}
+
+// Passing isEven as the argument
+checkNumber(4, isEven); // true
+checkNumber(7, isEven); // false
+```
+
 **More examples:**
 
 ```java
@@ -172,6 +188,8 @@ ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 
 numbers.removeIf(n -> n % 2 != 0);
 System.out.println(numbers); // [2, 4, 6, 8, 10]
 ```
+
+`removeIf()` takes a `Predicate` — here, `n -> n % 2 != 0` ("is this number odd?"). It goes through the list and removes every element where the predicate returns `true`. So it strips out all the odd numbers, leaving `[2, 4, 6, 8, 10]` — this **mutates the original list in place**, using the predicate to decide what gets removed.
 
 #### 2. Function\<T, R\> - Transforming Data
 
@@ -474,40 +492,6 @@ x -> x * 2                  // x becomes x times 2
 name -> name.toUpperCase()  // name becomes uppercase name
 (a, b) -> a + b             // a and b become their sum
 ```
-
-### Lambda vs Anonymous Class Comparison
-
-**Task**: Sort a list of names by their length.
-
-**Old way with Anonymous Class:**
-
-```java
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
-ArrayList<String> names = new ArrayList<>(Arrays.asList("Alice", "Bob", "Charlie", "David"));
-
-// Using anonymous class - VERY verbose!
-Collections.sort(names, new Comparator<String>() {
-    @Override
-    public int compare(String a, String b) {
-        return a.length() - b.length();
-    }
-});
-
-System.out.println(names); // [Bob, Alice, David, Charlie]
-```
-
-**New way with Lambda:**
-
-```java
-Collections.sort(names, (a, b) -> a.length() - b.length());
-
-System.out.println(names); // [Bob, Alice, David, Charlie]
-```
-
-We removed 5 lines of boilerplate! The logic is the same — much easier to read.
 
 ### When to Use Lambdas
 
@@ -878,312 +862,23 @@ Try these exercises:
 
 ---
 
-## Part 5 - Method References
+## Part 5 - Method References (Optional)
 
-### What are Method References?
+> This section is optional. It's here purely to give you exposure to a syntax shortcut you may encounter in other people's code — there is no activity for this part.
 
-Method references are an even shorter way to write lambda expressions **when the lambda only calls a single existing method**.
-
-Think of it as a shortcut:
-- **Lambda**: `x -> System.out.println(x)`
-- **Method Reference**: `System.out::println`
-
-Both do the same thing, but the method reference is shorter!
-
-### The :: Operator
-
-The double colon `::` operator is used for method references. Read it as "reference to method".
-
-### How Does :: Work? Where Does the Argument Go?
-
-This is the most confusing part for beginners. Let's clear it up with the full working code:
+Method references are an even shorter way to write a lambda **when the lambda only calls a single existing method**, using the `::` operator.
 
 ```java
-import java.util.Arrays;
-import java.util.List;
+// Lambda
+names.forEach(name -> System.out.println(name));
 
-public class LearnFunctionalProgramming {
-    public static void main(String[] args) {
-
-        List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
-
-        // Lambda — you write the argument explicitly
-        names.forEach(name -> System.out.println(name));
-        //            ^^^^                        ^^^^
-        //        you declare it             you pass it in
-
-        // Method reference — Java passes the argument automatically
-        names.forEach(System.out::println);
-
-    }
-}
+// Method reference — same thing, shorter
+names.forEach(System.out::println);
 ```
 
-With the lambda — you are saying: take `name`, pass it to `println`.
+**Simple rule**: whenever your lambda looks like `x -> someMethod(x)`, you can usually replace it with `someClass::someMethod`. Java infers that `x` is coming from the stream/list and passes it automatically — you don't need to write it yourself.
 
-With the method reference — you are saying: for each item, hand it **directly** to `println`. Java knows an item is coming from the list and passes it automatically. You don't need to write it.
-
-> **Simple rule**: When your lambda looks like `x -> someMethod(x)` — you can always replace it with `someClass::someMethod`. Java knows `x` is coming, you don't need to write it.
-
-> **Analogy**: Lambda is like saying "pick up each letter and put it in the postbox yourself". Method reference is like saying "deliver each letter directly to the postbox". Same result, less steps.
-
-### When Method Reference Does NOT Work
-
-✅ Use method reference when your lambda **only calls one existing method directly**:
-
-```java
-// Item goes DIRECTLY into the method — nothing else happening
-names.forEach(name -> System.out.println(name));  // ✅ can use ::
-names.forEach(System.out::println);               // ✅ cleaner!
-```
-
-❌ Do NOT use method reference when lambda does something extra:
-
-```java
-// Item is MODIFIED before going into the method
-names.forEach(name -> System.out.println("Name: " + name));  // ❌ cannot use ::
-```
-
-**Why?** Because `"Name: " + name` is extra work happening before `println`. Method reference is a direct pipe — item flows straight from the list into the method. If you stop the flow and modify it first, you need the full lambda.
-
-```
-✅ x -> someMethod(x)             →  ClassName::someMethod   (direct — works)
-❌ x -> someMethod(x + "extra")   →  no method reference     (modified — use lambda)
-❌ x -> someMethod("extra" + x)   →  no method reference     (modified — use lambda)
-```
-
-### Types of Method References
-
-Java has 4 types of method references. We will use a `Student` class to explain all 4 types clearly.
-
-**Our Student class — put this just above your main class:**
-
-```java
-static class Student {
-    String name;
-
-    Student(String name) {
-        this.name = name;
-    }
-
-    // Instance method — belongs to each Student object
-    void printName() {
-        System.out.println("Student: " + this.name);
-    }
-
-    // Static method — belongs to the Student class itself
-    static void printWelcome(String name) {
-        System.out.println("Welcome: " + name);
-    }
-}
-```
-
----
-
-#### Type 1 — Static Method Reference
-
-**Format**: `ClassName::staticMethodName`
-
-A **static method** belongs to the **class itself** — not to any object. You call it using the class name: `Student.printWelcome("Alice")` — no object needed.
-
-```java
-import java.util.Arrays;
-import java.util.List;
-
-public class LearnFunctionalProgramming {
-
-    static class Student { ... } // same Student class above
-
-    public static void main(String[] args) {
-
-        List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
-
-        // Lambda — you manually pass name to the static method
-        names.forEach(name -> Student.printWelcome(name));
-
-        // Method reference — Java passes each name automatically
-        names.forEach(Student::printWelcome);
-
-    }
-}
-```
-
-**Output:**
-```
-Welcome: Alice
-Welcome: Bob
-Welcome: Charlie
-```
-
-> **Say to students**: "`printWelcome` belongs to the `Student` **class** — not any object. You call it as `Student.printWelcome()`. So in method reference, you write the **class name** before `::`. Java takes each item from the list and passes it directly to the static method."
-
----
-
-#### Type 2 — Instance Method Reference on a Specific Object
-
-**Format**: `objectName::methodName`
-
-Here you already have **one specific object** created. You want to call its method.
-
-```java
-public static void main(String[] args) {
-
-    // One specific Student object already created
-    Student alice = new Student("Alice");
-
-    // Lambda — call alice's method
-    Runnable r1 = () -> alice.printName();
-
-    // Method reference — same thing, shorter
-    Runnable r2 = alice::printName;
-
-    r1.run(); // Student: Alice
-    r2.run(); // Student: Alice
-
-}
-```
-
-**Output:**
-```
-Student: Alice
-Student: Alice
-```
-
-> **Say to students**: "You already have ONE specific object created — `alice`. You are calling ITS method. So you write the **object name** (not the class name) before `::`. It always uses that same one object."
-
----
-
-#### Type 3 — Instance Method Reference on the Parameter Itself
-
-**Format**: `ClassName::instanceMethodName`
-
-Here the list contains **objects**, and you call a method **on each object as it comes** from the list.
-
-```java
-public static void main(String[] args) {
-
-    // List of Student OBJECTS — not Strings!
-    List<Student> students = Arrays.asList(
-        new Student("Alice"),
-        new Student("Bob"),
-        new Student("Charlie")
-    );
-
-    // Lambda — call printName on each student as it comes
-    students.forEach(student -> student.printName());
-
-    // Method reference — same thing, shorter
-    students.forEach(Student::printName);
-
-}
-```
-
-**Output:**
-```
-Student: Alice
-Student: Bob
-Student: Charlie
-```
-
-> **Say to students**: "Each item in the list IS a Student object. The method is called ON each item itself as it comes. You write the **class name** before `::` — but this time it means call this method on each Student that comes from the list."
-
-**Key difference between Type 2 and Type 3:**
-
-```java
-alice::printName    // Type 2 — always calls on THIS ONE specific alice object
-Student::printName  // Type 3 — calls on EACH student object as it comes from the list
-```
-
-> **Analogy**: Type 2 is like one teacher checking everyone's work. Type 3 is like each student checking their own work.
-
----
-
-#### Type 4 — Constructor Reference
-
-**Format**: `ClassName::new`
-
-Used when your lambda is **only creating a new object** — nothing else.
-
-```java
-import java.util.stream.Collectors;
-
-public static void main(String[] args) {
-
-    List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
-
-    // Lambda — take each name, create a new Student with it
-    List<Student> students1 = names.stream()
-        .map(name -> new Student(name))
-        .collect(Collectors.toList());
-
-    // Constructor reference — same thing, shorter
-    List<Student> students2 = names.stream()
-        .map(Student::new)
-        .collect(Collectors.toList());
-
-    // Print both — same output
-    students1.forEach(Student::printName);
-    students2.forEach(Student::printName);
-
-}
-```
-
-**Output:**
-```
-Student: Alice
-Student: Bob
-Student: Charlie
-```
-
-> **Say to students**: "`::new` means just create a new object. Whenever your lambda is only doing `new ClassName(something)` and nothing else, replace it with `ClassName::new`. Java automatically passes each item as the constructor argument."
-
----
-
-### All 4 Types at a Glance
-
-| Type | Format | Example | Means |
-|------|--------|---------|-------|
-| Static method | `ClassName::staticMethod` | `Student::printWelcome` | Call static method on the class |
-| Specific object | `objectName::method` | `alice::printName` | Call method on this one specific object |
-| Each item itself | `ClassName::instanceMethod` | `Student::printName` | Call method on each item from the list |
-| Constructor | `ClassName::new` | `Student::new` | Create a new object for each item |
-
-### Quick Conversion Examples
-
-| Lambda Expression | Method Reference |
-|-------------------|------------------|
-| `name -> Student.printWelcome(name)` | `Student::printWelcome` |
-| `() -> alice.printName()` | `alice::printName` |
-| `student -> student.printName()` | `Student::printName` |
-| `name -> new Student(name)` | `Student::new` |
-| `s -> s.toUpperCase()` | `String::toUpperCase` |
-| `s -> System.out.println(s)` | `System.out::println` |
-
-### 🧑‍💻 Quick Activity: Method References Practice
-
-Convert these lambdas to method references:
-
-1. ```java
-   List<String> words = Arrays.asList("apple", "banana", "cherry");
-   words.forEach(word -> System.out.println(word));
-   // Convert to method reference
-   ```
-
-2. ```java
-   List<String> names = Arrays.asList("john", "alice", "bob");
-   List<String> upper = names.stream()
-       .map(name -> name.toUpperCase())
-       .collect(Collectors.toList());
-   // Convert to method reference
-   ```
-
-3. ```java
-   List<String> nameList = Arrays.asList("Alice", "Bob", "Charlie");
-   List<Student> students = nameList.stream()
-       .map(name -> new Student(name))
-       .collect(Collectors.toList());
-   // Convert to method reference
-   ```
+That's all you need to know for now — if you see `::` in other people's code, you'll know what it's doing.
 
 ---
 

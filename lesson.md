@@ -500,27 +500,7 @@ name -> name.toUpperCase()  // name becomes uppercase name
 - The function is used only once
 - It makes your code clearer and shorter
 
-### 🧑‍💻 Quick Activity: Lambda Practice
-
-Try these exercises:
-
-1. Create a lambda that takes two integers and returns their sum
-   ```java
-   Calculator add = (a, b) -> a + b;
-   System.out.println(add.calculate(10, 5)); // 15
-   ```
-
-2. Use lambda to sort a list of strings by length (shortest first)
-   ```java
-   List<String> words = Arrays.asList("apple", "pie", "banana", "kiwi");
-   // Your code here
-   ```
-
-3. Use lambda with forEach to print each number multiplied by 3
-   ```java
-   List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
-   // Your code here
-   ```
+> **Note**: You've already been writing lambdas throughout Part 2 to fill in your functional interfaces, and you'll get more practice with them in the Stream activity coming up — so there's no separate lambda exercise here.
 
 ---
 
@@ -848,21 +828,9 @@ Try these exercises:
    // Your code here to get [ALICE, CHARLIE]
    ```
 
-3. From a list of prices, calculate how many items cost more than 50
-   ```java
-   List<Double> prices = Arrays.asList(25.99, 65.00, 45.50, 80.00, 30.00, 55.75);
-   // Your code here to get count: 3
-   ```
-
-4. Sort a list of words alphabetically and get the first 3
-   ```java
-   List<String> words = Arrays.asList("zebra", "apple", "mango", "banana", "kiwi");
-   // Your code here to get [apple, banana, kiwi]
-   ```
-
 ---
 
-## Part 5 - Method References (Optional)
+## Part 5 - Method References (Optional / Exposure Only)
 
 > This section is optional. It's here purely to give you exposure to a syntax shortcut you may encounter in other people's code — there is no activity for this part.
 

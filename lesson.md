@@ -168,16 +168,34 @@ checkNumber(7, isEven); // false
 **More examples:**
 
 ```java
-// Check if a string is long
-Predicate<String> isLongWord = word -> word.length() > 5;
-System.out.println(isLongWord.test("Hello"));     // false
-System.out.println(isLongWord.test("Beautiful")); // true
 
 // Check if a number is positive
 Predicate<Integer> isPositive = num -> num > 0;
 System.out.println(isPositive.test(10));  // true
 System.out.println(isPositive.test(-5));  // false
 ```
+
+**Passing different behaviors to the same method:**
+
+The real power of passing a Predicate as an argument is that the *same method* can behave differently depending on which Predicate you hand it. The method stays generic — the rule comes from outside.
+
+```java
+public static void checkString(String str, Predicate<String> isLengthy) {
+    System.out.println(isLengthy.test(str));
+}
+```
+
+```java
+// Two different definitions of "lengthy"
+Predicate<String> longerThan5  = s -> s.length() > 5;
+Predicate<String> longerThan10 = s -> s.length() > 10;
+
+// Same method, same word — but different rule passed in → different result
+checkString("Beautiful", longerThan5);  // true  (9 > 5)
+checkString("Beautiful", longerThan10); // false (9 > 10)
+```
+
+Notice: `checkString` never changed. We only changed *which behavior we passed in*. This is what "functions are values" really means — you hand the method a rule, and it runs whatever rule it was given.
 
 **Practical use with collections:**
 

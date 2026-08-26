@@ -746,7 +746,33 @@ Set<String> nameSet = names.stream()
     .collect(Collectors.toSet());
 ```
 
-#### forEach() - Do Something With Each Element
+#### Collecting into a Map
+
+You can also collect a stream into a `Map` — you just tell Java what the **key** should be and what the **value** should be.
+
+```java
+import java.util.Map;
+import java.util.stream.Collectors;
+
+List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
+
+// Key = the name, Value = the length of the name
+Map<String, Integer> nameLengths = names.stream()
+    .collect(Collectors.toMap(
+        name -> name,           // how to build the key
+        name -> name.length()   // how to build the value
+    ));
+
+System.out.println(nameLengths); // {Bob=3, Alice=5, Charlie=7}
+```
+
+`Collectors.toMap()` takes two functions — the first decides the **key**, the second decides the **value**. Java runs both on every element and builds the map for you.
+
+> **Note**: Keys must be unique. If two elements produce the same key, Java throws an error — so pick something unique as your key (like an ID or a name).
+
+---
+
+### forEach() - Do Something With Each Element
 
 **What it does**: Performs an action on each element
 
